@@ -1,0 +1,21 @@
+{
+  "name": "@local/dsh-scene9136",
+  "description": "把本机场景推演服务（9136/9137）接进 DSH / WriterX Hermes：scene9136_status（健康+状态）/ scene9136_plan（events=preview 出施工图并存候选）/ scene9136_check（规则检查，辅助）/ scene9136_apply（只采用作者已确认的候选，写 4 个受管文件）",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js"
+  ],
+  "license": "UNLICENSED",
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^0.1.0-rc.5",
+    "@deepseek-ai/dsh-tools": "^0.2.0-rc.1",
+    "@deepseek-ai/schemastery": "^0.1.0-rc.5"
+  }
+}

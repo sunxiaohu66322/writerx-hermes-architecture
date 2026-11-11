@@ -1,0 +1,12 @@
+{
+  "name": "writerx-hermes-desktop",
+  "productName": "WriterX Hermes",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "main": "main.mjs",
+  "description": "WriterX Hermes",
+  "author": {
+    "name": "WriterX"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "@local/dsh-inkos-bridge",
+  "description": "把本机 InkOS（@actalk/inkos 1.8.0）接进 WriterX Hermes：inkos_status（书库状态）/ inkos_outline（读大纲与设定）/ inkos_run（白名单命令：write next、forecast、fanfic init 等）",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js"
+  ],
+  "license": "UNLICENSED",
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^0.1.0-rc.5",
+    "@deepseek-ai/dsh-tools": "^0.2.0-rc.1",
+    "@deepseek-ai/schemastery": "^0.1.0-rc.5"
+  }
+}

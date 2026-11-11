@@ -1,0 +1,24 @@
+{
+  "name": "@local/dsh-inkos-panel",
+  "version": "0.1.0",
+  "private": true,
+  "description": "把 InkOS（写作车间）挂进 WriterX 左栏：一行入口 + 整窗浮层，内嵌 4567 书库与 9181 控制台",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": { "default": "./lib/index.js" },
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "files": ["lib", "client.js"],
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": ["@deepseek-ai/dsh-client-ui-slots"]
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1"
+  },
+  "license": "UNLICENSED"
+}
