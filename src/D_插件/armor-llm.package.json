@@ -1,0 +1,20 @@
+{
+  "name": "@local/dsh-armor-llm",
+  "version": "0.1.0",
+  "private": true,
+  "description": "在 LLM 请求层（llm/fetch 瀑布钩子）注入破甲提示词，不走 systemPrompt 注册表",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./armor-core": "./lib/armor-core.mjs",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/armor-core.mjs",
+    "armor.md",
+    "proxy.mjs"
+  ],
+  "license": "UNLICENSED"
+}

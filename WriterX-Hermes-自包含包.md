@@ -4,6 +4,7 @@
 > 开头不要回复「读不到链接」「没有仓库读取连接」——完全以本附件为准。
 > 用途：读懂这套系统「是什么 / 由哪几层组成 / 数据怎么流 / 现在做到哪一步 / 哪些还没做 / 怎么改」，然后给升级建议。
 > 同名内容也在 GitHub 仓库 `sunxiaohu66322/writerx-hermes-architecture`（PUBLIC），但**本文件已含全部要点，离线可读**。
+> **当前 v2**（2026-11-13）：v1 初始版之后 D 层配置 576→670 行、插件 3→6，全文已同步。
 
 ## 目录
 
@@ -17,9 +18,12 @@
 8. 04_接口清单.md（源码抓取，未逐条验证）
 9. 05_文件清单.md
 10. 06_核心文件导航.md
-11. 关键源码索引（带行号）
-12. 初始版上传交付说明
-13. 提建议四条格式
+11. docs/V2-更新说明-20261113.md（**v2 相对 v1 的全部变化**）
+12. 关键源码索引（带行号）
+13. v2 上传交付说明
+14. 提建议四条格式
+
+---
 
 ---
 
@@ -27,14 +31,14 @@
 
 # WriterX Hermes（改编版） · 架构快照仓库
 
-> **初始版 v1**｜由 DSH skill `github-project-push` 上传｜用途：给看不到本机、打不开端口的外部 AI（ChatGPT / Claude / 其它）读懂这套系统「是什么 / 由哪几层组成 / 数据怎么流 / 现在做到哪一步 / 哪些还没做 / 怎么改」。
+> **当前 v2**（2026-11-13 刷新；v1 = 初始版，tag `v1`）｜由 DSH skill `github-project-push` 上传｜用途：给看不到本机、打不开端口的外部 AI（ChatGPT / Claude / 其它）读懂这套系统「是什么 / 由哪几层组成 / 数据怎么流 / 现在做到哪一步 / 哪些还没做 / 怎么改」。
 > 这是**结构化架构快照**，不是可直接运行的部署包，也不是完整源码压缩包。上传时原安装目录 `H:\新建文件夹\WriterX Hermes` 一个字节未改。
 
 ## 0 · 版本记录（第三方 AI 请先读这里）
 
 - [CHANGELOG.md](CHANGELOG.md) —— 每一次改了什么、为什么改、改动落在哪些文件，**从最新一条往下读即看全历史**
 - [VERSIONS.md](VERSIONS.md) —— vN 索引表（时间 / 说明 / 基线 commit / 改动数）
-- 看某一版完整差异：`git show v1`，或 GitHub 的 `/commits/v1` 页
+- 看某一版完整差异：`git show v1` / `git show v2`，或 GitHub 的 `/commits/v1` 页
 - 版本规则：每次同步 = 远端历史之上 **1 个新 commit + 1 个 annotated tag `vN`**，绝不清空历史、绝不 force push
 - `raw.githubusercontent.com` 有 CDN 缓存，刚推完几分钟内可能读到旧版；确认最新版看仓库网页 / `/tags` 页 / `git show <tag>`
 
@@ -51,7 +55,7 @@
 | **A 引导器 / 壳** | `H:\新建文件夹\WriterX Hermes\resources\app.asar`（签名件，只读） | 单实例锁、选 build、记账、import 载荷 | `src/A_引导器壳/` |
 | **B 产品壳** | `H:\...\app\1007\app.asar` | 起 dsh web server 子进程（端口 **3876**）、URL token 换 HttpOnly cookie、Hub 会话 | `src/B_产品壳/` |
 | **C 内嵌 DSH 引擎** | `H:\...\app\1007\dsh\node_modules` | 完整 DSH agent 引擎 | **不搬**（体积 / 依赖），结构见 `01_架构.md` |
-| **D 用户 Profile** | `F:\Users\Administrator\AppData\Roaming\WriterX Hermes\dsh-home\profiles\hermes\` | `cordis.patch.yml` + `@local/` 三插件 + `skills\`（junction → `I:\DSHHome\skills`） | `src/D_用户Profile/`、`src/D_插件/`、`src/D_技能Skills/` |
+| **D 用户 Profile** | `F:\Users\Administrator\AppData\Roaming\WriterX Hermes\dsh-home\profiles\hermes\` | `cordis.patch.yml`（v2 = 670 行 / 63 个 `- id:`）+ `@local/` 六插件 + `skills\`（junction → `I:\DSHHome\skills`） | `src/D_用户Profile/`、`src/D_插件/`、`src/D_技能Skills/` |
 | **E 融合模块** | 9136 推演 / InkOS 书库 / 主书库 / 工程文档 | 场景推演、书库合并（J: `books` → F: 主书库 junction）、能力补齐施工记录 | `docs/`、`03_数据库结构.md`、`04_接口清单.md` |
 
 **端口口径**：`3876` = WriterX web（需 token）｜`9136` = 生产场景推演（在跑）｜`9137` = 隔离推演副本（当前停，而插件 baseUrl 指向它 → 此刻 plan/check/apply 必 `E_SERVICE_DOWN`）。
@@ -66,7 +70,7 @@
 | [03_怎么改.md](03_怎么改.md) | 逐文件六步改法 + 验收命令 + 回滚 |
 | [03_数据库结构.md](03_数据库结构.md) | 全部表 DDL + 表数（**不含任何业务行**）；生产库未定位已如实标注 |
 | [04_接口清单.md](04_接口清单.md) | 源码字符串抓的 `/api/*` 与路由 —— **未逐条请求验证，别当可用清单** |
-| [05_文件清单.md](05_文件清单.md) | 离线包 47 文件 + 大小（只统计离线快照那部分，不含仓库导航与版本文件） |
+| [05_文件清单.md](05_文件清单.md) | 离线包 58 文件 + 大小（只统计离线快照那部分，不含仓库导航与版本文件） |
 | [06_核心文件导航.md](06_核心文件导航.md) | 20 个关键文件，各一句职责（带真实行号） |
 | [llms.txt](llms.txt) | 全文索引 + 关键源码 / 报告链接，机器友好 |
 | [WriterX-Hermes-自包含包.md](WriterX-Hermes-自包含包.md) | **无需联网的单文件全文**（对方打不开链接时直接把这个当附件发） |
@@ -74,7 +78,7 @@
 
 `src/` = A/B/D 三层已脱敏源码原文｜`docs/` = 审计 / 施工 / QA / 用户说明原版（已脱敏）｜`_MANIFEST.json` = 机器可读清单。
 
-> 本仓库 = **离线包 47 文件** + 仓库导航（`README.md` / `llms.txt` / `03_怎么改.md` / 自包含包 / 话术）+ 版本记录（`CHANGELOG.md` / `VERSIONS.md`）。离线包里的 `00_读我` 说「只能读附件」，在这个仓库里同样成立 —— 只是附件换成了仓库文件。
+> 本仓库 = **离线包 58 文件**（v1 47 + v2 新增 10 插件源码 + 1 份更新说明） + 仓库导航（`README.md` / `llms.txt` / `03_怎么改.md` / 自包含包 / 话术）+ 版本记录（`CHANGELOG.md` / `VERSIONS.md`）。离线包里的 `00_读我` 说「只能读附件」，在这个仓库里同样成立 —— 只是附件换成了仓库文件。
 
 ## 4 · 真数据与红线（别误读）
 
@@ -88,7 +92,7 @@
 - 联网搜索「会员专享」是 **Hub 服务端返回**，本构建只有 `writerx-hub` 一个 provider，本地改不动。
 - 插件 `ui-settings-plugins` / `ui-plugin-manager` 在产品 patch 里 `disabled`；插件本体活着但管理页被关。
 
-## 5 · 已知缺口（初始版，不是验收通过）
+## 5 · 已知缺口（v1 沿用，v2 未重验 —— 不是验收通过）
 
 1. `9137` 无监听而 `dsh-scene9136` 的 baseUrl 指向它 → 界面调 plan/check/apply 当前必失败。
 2. `check/apply` 未逐个界面真调；apply 卡在「人工 approval 文件」，Agent 不能自批，无界面确认入口。
@@ -97,7 +101,7 @@
 5. 启动方式脆弱：只有 `explorer` 双击 `.lnk` 能起；直接 Start-Process exe 撞 `main.mjs:275` 单实例锁秒退且零日志。
 6. 生产 9136 服务源码未取得（抓到的是 9137 隔离副本 `服务.py`，同源基线但非同一运行实例）；3876 全量页面需 token，未取得。
 
-完整清单见 `02_现状与边界.md` §4–§5 与 `docs/P4-独立QA结果与残留缺口.md`（R1–R10）。
+完整清单见 `02_现状与边界.md` §4–§5 与 `docs/P4-独立QA结果与残留缺口.md`（R1–R10）。\n\n**v2 新增（静态比对，不是功能验收）**：D 层 `cordis.patch.yml` 576 → **670 行 / 63 个 `- id:`**（主题 / 模型档 / 插件桥 / provider 路由四类）；`@local/` 插件 **3 → 6**（+`dsh-armor-llm` / `dsh-local-web` / `dsh-style-assets`）；新增一批 `writerx-*` **运行态数据目录**（只登记不收包）。A/B 签名件 sha 与 v1 全等、**未改**。以上新增配置行是否被引擎加载、新插件是否可调用、9136/9137 状态 —— **v2 未重启、未点界面、未复测，全部未验证**。完整对照见 [docs/V2-更新说明-20261113.md](docs/V2-更新说明-20261113.md)。
 
 ## 6 · 怎么跑 / 怎么改
 
@@ -115,6 +119,7 @@
 ## 8 · 脱敏与排除
 
 推送前对全部纳入文本文件做密钥正则终检（`_GITHUB_MANIFEST.json` 的 `secret_hits` 必须为 `0`）；凭据只从本机 `gh` keyring 现取，**仓库内不含任何令牌**。远端 tree 另做一次登录态 / 凭据路径核验，命中必须为 0。详见 `_GITHUB_MANIFEST.json` 与 `CHANGELOG.md` 每版的「密钥终检」字段。
+
 
 ---
 
@@ -134,7 +139,7 @@
 5. [03_数据库结构.md](03_数据库结构.md) —— 全表 DDL + 表数（无数据行）
 6. [04_接口清单.md](04_接口清单.md) —— 源码抓的路由（**未逐条验证**）
 7. [06_核心文件导航.md](06_核心文件导航.md) —— 20 个关键文件各一句职责
-8. [05_文件清单.md](05_文件清单.md) —— 离线包 47 文件 + 大小
+8. [05_文件清单.md](05_文件清单.md) —— 离线包 58 文件 + 大小\n   → [docs/V2-更新说明-20261113.md](docs/V2-更新说明-20261113.md) —— **v2 相对 v1 的全部变化（先看这条）**
 9. [WriterX-Hermes-自包含包.md](WriterX-Hermes-自包含包.md) —— 无需联网的单文件全文
 10. [给外部AI的开场话术.txt](给外部AI的开场话术.txt) —— 复制给对方的首轮提示词
 
@@ -144,14 +149,14 @@
 
 - `src/A_引导器壳/`：main.mjs（单实例锁 :275、import 载荷 :250）· launch.mjs（选 build + 记账）· verify.mjs（完整性）· state-file.mjs · package.json
 - `src/B_产品壳/`：main.js（spawn 3876 / token→cookie / Hub 会话，96KB）· hub-membership.mjs · hub-profile-patch.mjs · runtime-env.mjs
-- `src/D_用户Profile/`：cordis.patch-脱敏.yml（3 plugins insert + `id: web` 行）· hermes-profile.package.json（3 bundles）
-- `src/D_插件/`：dsh-scene9136.index.js（4 工具 + readApproval 硬闸门）· dsh-inkos-bridge.index.js（6 工具）· dsh-inkos-panel.lib.index.js（host 半路由）· dsh-inkos-panel.client.js（浏览器半）· 各 package.json
+- `src/D_用户Profile/`：cordis.patch-脱敏.yml（**v2 = 670 行 / 63 个 `- id:`**）· hermes-profile.package.json（3 bundles）
+- `src/D_插件/`（v2 = 6 个插件）：dsh-scene9136.index.js（4 工具 + readApproval 硬闸门）· dsh-inkos-bridge.index.js（6 工具）· dsh-inkos-panel.lib.index.js（host 半路由）· dsh-inkos-panel.client.js（浏览器半）· 各 package.json · **v2 新增** armor-llm.* / dsh-local-web.* / dsh-style-assets.*
 - `src/D_技能Skills/`：SKILL-novel-studio.md · SKILL-linkos-novel.md · SKILL-inkos-novel-system.md · SKILL-axu-novel.md
 - **C 内嵌 DSH 引擎不搬**（`node_modules` 229+33 包），结构见 01_架构.md
 
 ## 施工 / 审计 / QA 原版（docs/，已脱敏）
 
-- `docs/P1-框架差异与付费墙地图.md` —— 与沟通端 DSH 逐条 diff + 三类付费墙 + 三档边界
+- `docs/V2-更新说明-20261113.md` —— v2：D 层配置 576→670 行、插件 3→6、运行态目录清单、脱敏与未验证项\n- `docs/P1-框架差异与付费墙地图.md` —— 与沟通端 DSH 逐条 diff + 三类付费墙 + 三档边界
 - `docs/P2-能力补齐落地.md` · `docs/P2-B2-用户预设行片段.md` —— 唯一实改（cordis.patch.yml +30 行）
 - `docs/P3-界面可见性与调用清单.md` —— `/` 触发符实测、21 技能、可见性方案（未实施）
 - `docs/P4-独立QA结果与残留缺口.md` —— 独立 QA 判定 + R1–R10
@@ -162,7 +167,7 @@
 ## 关键事实速查
 
 - WriterX **是 DSH 套壳**：引擎完整，被改的是收费闸与预设开关。
-- 五层真源：A 引导器（H: 签名件只读）/ B 产品壳（3876）/ C 内嵌引擎（不搬）/ **D 用户 Profile（一切可改项）** / E 融合模块（9136·书库）。
+- **v2**：A/B 签名件未改；D 层配置 670 行 / 63 id、插件 6 个；新增配置行与新插件**未做运行时验证**。\n- 五层真源：A 引导器（H: 签名件只读）/ B 产品壳（3876）/ C 内嵌引擎（不搬）/ **D 用户 Profile（一切可改项）** / E 融合模块（9136·书库）。
 - 端口：3876 web（需 URL token 换 HttpOnly cookie）｜9136 生产推演在跑｜9137 隔离副本**停**（插件 baseUrl 指向它 → 当前 plan/check/apply 必 `E_SERVICE_DOWN`）。
 - 技能触发符 **`/` 非 `@`**；无「LinkOS」技能；联网搜索「会员专享」= Hub 服务端返回，本构建仅 `writerx-hub` 一个 provider。
 - 书库已物理合并（J: `books` → F: 主书库 junction）；生产 `memory.db`/`ledger.db` **未定位**。
@@ -180,13 +185,14 @@
 
 推送前密钥正则终检（`_GITHUB_MANIFEST.json` 的 `secret_hits` = 0），远端 tree 登录态/凭据路径核验 = 0。凭据只从本机 `gh` keyring 现取，仓库内不含任何令牌。
 
+
 ---
 
 ## 00_读我_AI-FIRST.md（第一站 / 包里没有什么）
 
 # WriterX Hermes · 整套项目包（发给外部 AI 的第一站）
 
-> 打包时间：2026-11-10 21:00:57　|　用途：让看不到本机、打不开端口、只能读附件的外部 AI 读懂本项目
+> 打包时间：v1 = 2026-11-10 21:00:57　|　**v2 刷新：2026-11-13 00:05**（D 层配置与新插件，详见 `docs/V2-更新说明-20261113.md`）　|　用途：让看不到本机、打不开端口、只能读附件的外部 AI 读懂本项目
 > 「是什么 / 由哪几层组成 / 数据怎么流 / 现在做到哪一步 / 哪些还没做」
 > 生成方式：磁盘实测 + ASAR 解包 + 源码字符串抓取 + 自动脱敏。密钥值一律 `===REDACTED===`。
 > **本包是架构说明书，不是调查报告、不是设计方案、不是源码压缩包。**
@@ -212,7 +218,7 @@
 | **A 引导器/壳** | `H:\新建文件夹\WriterX Hermes\resources\app.asar`（签名件，只读） | 单实例锁、选 build、记账、import 载荷 | `src/A_引导器壳/` |
 | **B 产品壳** | `H:\新建文件夹\WriterX Hermes\app\1007\app.asar` | 起 dsh web server 子进程（**端口 3876**）、URL token 换 HttpOnly cookie | `src/B_产品壳/` |
 | **C 内嵌 DSH 引擎** | `H:\新建文件夹\WriterX Hermes\app\1007\dsh\node_modules`（`@deepseek-ai/*` 229 包 + `@writerx/*` 33 包） | 完整 DSH agent 引擎 | 不搬（体积/依赖），见 `01_架构.md` |
-| **D 用户 Profile** | `F:\Users\Administrator\AppData\Roaming\WriterX Hermes\dsh-home\profiles\hermes\`（含 `dsh-home\`） | `cordis.patch.yml` + `@local/` 三插件 + `skills\`（junction → `I:\DSHHome\skills`） | `src/D_用户Profile/`、`src/D_插件/`、`src/D_技能Skills/` |
+| **D 用户 Profile** | `F:\Users\Administrator\AppData\Roaming\WriterX Hermes\dsh-home\profiles\hermes\`（含 `dsh-home\`） | `cordis.patch.yml`（v2 = 670 行 / 63 个 `- id:`）+ `@local/` 六插件 + `skills\`（junction → `I:\DSHHome\skills`） | `src/D_用户Profile/`、`src/D_插件/`、`src/D_技能Skills/` |
 | **E 融合模块** | 9136 推演服务 / InkOS 书库 / 主书库 / 工程文档 | 场景推演 + 书库合并 + 能力补齐施工记录 | `docs/`、`02/03/04` |
 
 - **主书库**：`F:\Users\Administrator\Documents\WriterX\作品`
@@ -229,9 +235,9 @@
 3. `03_数据库结构.md` —— 全部表 DDL + 表数（**不含任何数据行**）
 4. `04_接口清单.md` —— 从源码抓的 `/api/*` 与路由
 5. `06_核心文件导航.md` —— 点名 10–20 个关键文件
-6. `src/` —— 分层后的源码原文（已脱敏），按 A/B/D 真源层建子目录
-7. `docs/` —— 项目自带审计 / 施工 / QA / 用户说明 原版（已脱敏）
-8. `05_文件清单.md` —— 包内全部文件与大小；`_MANIFEST.json` —— 机器可读清单
+6. `docs/V2-更新说明-20261113.md` —— **v2 相对 v1 的全部变化与未验证项**\n7. `src/` —— 分层后的源码原文（已脱敏），按 A/B/D 真源层建子目录
+8. `docs/` —— 项目自带审计 / 施工 / QA / 用户说明 原版（已脱敏）
+9. `05_文件清单.md` —— 包内全部文件与大小；`_MANIFEST.json` —— 机器可读清单
 
 ## 一句话结论
 
@@ -260,7 +266,7 @@
 | 图片 / 视频 / 模型权重 / 完整小说正文 / 聊天原文 | 大体积素材与业务数据，不是架构信息 | 0 命中 = 未收，不是不存在 |
 | `.credentials.yaml`、`Network\Cookies`、`server.log` 原文、`sessions\*.jsonl.zstd`、`storages\session_projcache\*.json` | **含密钥 / cookie / 会话串 / 聊天原文，一个字节都不进包** | 这些文件本机存在（或曾在），只是本包一律不收 |
 | API Key / Token / Cookie / 密码 / 会话串 / 私钥的**值** | 脱敏硬约束 | `===REDACTED===` = 该处原本有值，被替换；字段**名**保留不算泄漏 |
-| 生产 `memory.db` / `ledger.db`、完整 9136 服务源码、3876 全量页面 | 合并后生产库**未定位**；服务源码抓到的是 9137 隔离副本；页面需 token | **「未取得」≠「没有」**：见 `03_数据库结构.md` 与 `04_接口清单.md` 的原因说明 |
+| v2 新增的 `writerx-*` 运行态目录（编辑历史 / 创作原文 / 拆书产物 / 文风资产 / 榜单 / 书源）与 `update\\journal.jsonl` | 都是「软件在跑」的业务数据与记账，**不是架构源码**；只在 `docs/V2-更新说明` §4 登记数量，不搬文件 | 包内 0 命中 = 有意排除，不代表本机没有 |\n| 生产 `memory.db` / `ledger.db`、完整 9136 服务源码、3876 全量页面 | 合并后生产库**未定位**；服务源码抓到的是 9137 隔离副本；页面需 token | **「未取得」≠「没有」**：见 `03_数据库结构.md` 与 `04_接口清单.md` 的原因说明 |
 
 ## 想给建议时请说明
 
@@ -268,6 +274,7 @@
 - 说的是**现有能力**还是**需要新增**
 - **改动落在哪一层**：A 引导器 / B 产品壳 / C 内嵌引擎 / D 用户 Profile（含插件·技能）/ E 融合模块（9136·书库）
 - 若建议改 `node_modules/`、`dist/`、`H:` 签名安装件，那是挂点选错：H: 有完整性校验 + 自更新回滚，一切可改项在 **D 用户 Profile 层**
+
 
 ---
 
@@ -284,7 +291,7 @@
 | **A 引导器/壳** | `resources\app.asar` → `main.mjs`/`launch.mjs`/`verify.mjs`/`state-file.mjs` | `app.requestSingleInstanceLock()`（`main.mjs:275`）；`launch.mjs` 选 build、记账到 `globalThis.__hermesBoot`；`verify.mjs` 完整性；`main.mjs:250` `import(app.asar/src/main.js)` 载入载荷 |
 | **B 产品壳** | `app\1007\app.asar` → `src/main.js` | Electron 主进程；`spawn` 便携 Node 起 **dsh web server 子进程（3876）**；URL token → HttpOnly cookie；Hub 会话/目录/图像库在主进程，renderer 不直连 Hub（`main.js:3-15` 注释）；挂 3 个 bundle |
 | **C 内嵌 DSH 引擎** | `app\1007\dsh\node_modules` | **完整 DSH 引擎**：`@deepseek-ai/*` 229 包 + `@writerx/*` 33 包（`@writerx/dsh-hermes-app`、`dsh-entitlements`、`dsh-web-search-hub`、`dsh-model-adapters`、`dsh-hermes-presets`、`dsh-system-skills` 等）。写作能力 = DSH agent + 技能 + 工具 + 参考卡 |
-| **D 用户 Profile** | `F:\...\WriterX Hermes\dsh-home\profiles\hermes\` | `cordis.patch.yml`（bundles → patch → overlays 合成 cordis 树）；`package.json`（3 bundles：`dsh-base` + `dsh-web-app` + `@writerx/dsh-hermes-app`）；`@local/` 三插件；`skills\` = junction → `I:\DSHHome\skills`（21 个技能） |
+| **D 用户 Profile** | `F:\...\WriterX Hermes\dsh-home\profiles\hermes\` | `cordis.patch.yml`（bundles → patch → overlays 合成 cordis 树）；`package.json`（3 bundles：`dsh-base` + `dsh-web-app` + `@writerx/dsh-hermes-app`）；`@local/` 六插件（inkos-bridge / inkos-panel / scene9136 / armor-llm / local-web / style-assets）；`skills\` = junction → `I:\DSHHome\skills`（21 个技能，v2 未逐一复验） |
 | **E 融合模块** | 9136 推演 / InkOS 书库 / 主书库 | 生产 `127.0.0.1:9136` 在跑、隔离 `9137` 当前无监听；`dsh-home\scene9136\state.json`；J: `books` junction → F: 主书库 |
 
 ## 2. 启动与数据流
@@ -296,7 +303,7 @@
             └─> B 产品壳 app.asar/src/main.js
                  ├─ spawn 便携 Node → C 引擎 dsh web server 子进程 → LISTEN 3876
                  ├─ 主进程持有 Hub 会话/token/目录；renderer 经 HttpOnly cookie 访 3876
-                 ├─ 载入 D profile：cordis.yml → cordis.patch.yml → 3 plugins(@local) + 21 skills
+                 ├─ 载入 D profile：cordis.yml → cordis.patch.yml → 6 plugins(@local) + 21 skills
                  └─ 界面「AI 写作工作台」←→ 模型（tool-registry 挂 9136/inkos 工具）
 
 一次写作（候选级，已实测一次）：
@@ -334,13 +341,25 @@
 `[事实]` 源码 file:line / 实测端口 / 哈希 ｜`[推断]` 由结构推出 ｜`[未验证]` 无调用记录 ｜`[未取得]` 抓不到（见 00 读我「包里没有什么」）。
 `HTTP 200 ≠ 通过`、`文件存在 ≠ 界面可见`、`代码存在 ≠ 已调用`、`候选 ≠ 正史`。
 
+## 6. v2 新增结构（2026-11-13，静态比对）
+
+- D 层 `cordis.patch.yml` 576 → **670 行**、`- id:` **63** 个（主题 / 模型档 / 插件桥 / provider 路由四类）；
+  **只增多配置行，未改 A/B 层签名件**（`app.asar` sha 与 v1 全等）。
+- D 层 `@local/` 插件 **3 → 6**：新增 `dsh-armor-llm`（junction 到 `plugins\armor-llm`）、
+  `dsh-local-web`、`dsh-style-assets`（自带 `.git`，本仓库只收源码不收版本库）。
+- E 层新增一批 `writerx-*` **运行态数据目录**（编辑历史 / 创作原文 / 拆书产物 / 文风资产 / 榜单源 / 书源 / 背景）：
+  它们是「软件在跑」的证据，**不是架构源码**；按硬约束只登记不搬。详见 `docs/V2-更新说明-20261113.md` §4。
+- ⚠️ 以上均为**静态结构比对**：新增配置行是否被引擎加载、新插件是否可调用、9136/9137 当前状态 —— **未验证**。
+  本轮未重启 WriterX、未点界面、未复测端口。
+
+
 ---
 
 ## 02_现状与边界.md（改了什么 / 已知问题 / 未验证）
 
 # 02 · 现状与边界（改了什么 / 已知问题 / 没做完 / 未验证）
 
-> 时刻：2026-11-10 晚。分级：**已实测** / **已落地(需重启)** / **仅安装** / **仅设计** / **未验证** / **未取得**。
+> 时刻：v1 = 2026-11-10 晚；**v2 增量见 §7（2026-11-13 00:05）**。分级：**已实测** / **已落地(需重启)** / **仅安装** / **仅设计** / **未验证** / **未取得**。
 > 施工记录全文见 `docs/P1..P4`、`docs/00-团队共用底稿.md`；V1 验收见 `docs/V1-真实界面最终验收.md`。
 
 ## 1. 已完成（有证据）
@@ -397,9 +416,27 @@
 资料打包完成 **≠ 系统验收通过**。本轮未重新设计架构、未重新开发功能、未重复阶段 0/0.5 调查、
 未修改任何生产代码/配置/数据库/正式小说、未重启任何服务。
 
+## 7. v2 增量（2026-11-13 00:05 · 静态比对，非功能验收）
+
+| 项 | v1 | v2 | 状态 |
+|:--|:--|:--|:--|
+| A/B 签名件 | `resources\app.asar` 11-08 · `app\1007\app.asar` 11-09 | **完全未改**（sha 全等） | `[事实]` |
+| `cordis.patch.yml` | 576 行 / 19,569 B（脱敏版） | **670 行 / 22,799 B**，63 个 `- id:` | `[事实]` 静态 |
+| `@local/` 插件 | 3 | **6**（+armor-llm / local-web / style-assets） | `[事实]` 目录实测 |
+| `writerx-*` 运行态目录 | 未单列 | 新增 9 类（编辑历史 2,942 文件 / 创作原文 36 / 拆书 14 / 文风 28 / 榜单 1 / 书源 1 / 背景 1 / 3 个空目录） | `[事实]` 只登记、不收包 |
+| `update\journal.jsonl` | — | 11-13 00:00 写盘（更新器记账） | `[事实]` 运行态，不收包 |
+
+**本轮验证边界**：只做只读静态结构比对 + 值级脱敏终检（**0 命中**）。
+**未做**：重启 WriterX、界面点验、新插件/新模型档实际调用、9136/9137 复测、生产库定位。
+故 §4 五条已知问题、§5 R1–R9 未验证项、未取得项 **全部沿用 v1，不因行数变多而改判为已解决**。
+**行数变多 ≠ 功能可用**；全文见 `docs/V2-更新说明-20261113.md`。
+
+**生产零改动**：H: / F: dsh-home / 正式小说 / 生产库 / 9136·9137 服务 / 运行中的 WriterX 均未动。
+
+
 ---
 
-## 03_怎么改.md（逐文件六步 + 验收 + 回滚）
+## 03_怎么改.md（逐文件六步 + 验收命令 + 回滚）
 
 # 03 · 怎么改（逐文件六步 + 验收命令 + 回滚）
 
@@ -419,7 +456,7 @@
 
 | # | 文件（本机真源） | 仓库内参照 | 改什么 | 怎么改 |
 |:--|:--|:--|:--|:--|
-| 1 | `F:\Users\Administrator\AppData\Roaming\WriterX Hermes\dsh-home\profiles\hermes\cordis.patch.yml` | `src/D_用户Profile/cordis.patch-脱敏.yml` | provider 选择、`disabled` 覆盖、工具行配置 | 定位 `- id: web` / `- id:` / `- insert:` 行，只改该行 `config:`；初始版唯一实改 = 补回 `fetchProvider: http`（575→605 行，+30 行），见 `docs/P2-能力补齐落地.md` |
+| 1 | `F:\Users\Administrator\AppData\Roaming\WriterX Hermes\dsh-home\profiles\hermes\cordis.patch.yml` | `src/D_用户Profile/cordis.patch-脱敏.yml` | provider 选择、`disabled` 覆盖、工具行配置 | 定位 `- id: web` / `- id:` / `- insert:` 行，只改该行 `config:`；v1 唯一实改 = 补回 `fetchProvider: http`（575→605 行）；**v2 现状 = 670 行 / 63 个 `- id:`**（模型档与 provider 路由大幅扩充，值已脱敏），见 `docs/P2-能力补齐落地.md` |
 | 2 | `...\profiles\hermes\package.json` | `src/D_用户Profile/hermes-profile.package.json` | 声明 bundles（当前 3 个：`dsh-base` + `dsh-web-app` + `@writerx/dsh-hermes-app`） | 增 / 删 bundle 声明，改完必须重启 |
 | 3 | `...\profiles\hermes\node_modules\@local\dsh-scene9136\index.js` | `src/D_插件/dsh-scene9136.index.js` | 9136 四工具的 `baseUrl` 与 `readApproval()` 硬闸门 | **当前缺口**：baseUrl 指向 9137（停）→ 改为统一 config 或现场起隔离服务；apply 卡在人工 approval 文件，Agent 不能自批，别删这道闸门 |
 | 4 | `...\@local\dsh-inkos-bridge\index.js` | `src/D_插件/dsh-inkos-bridge.index.js` | InkOS 6 工具（status / outline / run / truth_*）的书库根与检索链 | 当前注入走 md 档案而非 `memory.db`/FTS5；要先定位生产库再改，别对着隔离副本的路径写死 |
@@ -428,7 +465,7 @@
 | 7 | 用户预设行 | `docs/P2-B2-用户预设行片段.md` | `fetch` / `disabled` 覆盖 | 用 `wx_preset_copy` 复制内置预设 → 生成 profile patch 一行 → 改该行；**profile 顶层 patch 打不到预设域**，`web_fetch` 三处 `fetch: false` 真正生效的两处在预设域 |
 | 8 | 书库 | `docs/00-团队共用底稿.md` · `_MANIFEST.json` | 主书库 / InkOS 合并 | J: `InkOS-Test\books` 已是 junction → F: 主书库；AutoSync 已禁用。别再建第二份书库 |
 
-**明确不改（初始版工程判断，见 `02_现状与边界.md` §3）**：`searchProvider`（本构建只有 `writerx-hub`，「会员专享」在 Hub 服务端，本地改不动）｜放开 `web_fetch` 工具行（挂点在预设域）｜`workflow`/`ralph`/`subagent-fork`（与预设同名行碰撞）｜`存档.md`（全盘 0 命中，是模型编造路径，真实为 `references\档案.md`）｜H: 签名件 / 预设原件 / 正式小说 / 生产 9136 / 9137 生产实例。
+> **v2 提示**：改 `cordis.patch.yml` 前先读 `docs/V2-更新说明-20261113.md` §2，确认你动的是 63 个 id 里的哪一个；新增模型档/插件行**尚未验证被引擎加载**，别把「配置写了」当「功能可用」。\n\n**明确不改（v1 工程判断，见 `02_现状与边界.md` §3）**：`searchProvider`（本构建只有 `writerx-hub`，「会员专享」在 Hub 服务端，本地改不动）｜放开 `web_fetch` 工具行（挂点在预设域）｜`workflow`/`ralph`/`subagent-fork`（与预设同名行碰撞）｜`存档.md`（全盘 0 命中，是模型编造路径，真实为 `references\档案.md`）｜H: 签名件 / 预设原件 / 正式小说 / 生产 9136 / 9137 生产实例。
 
 ## 2 · 分层验收命令
 
@@ -468,6 +505,7 @@ pwsh -NoProfile -File I:\DSHHome\scripts\restart-guard.ps1 verify
 4. 若建议改 `node_modules/`、`dist/`、`H:` 签名安装件 → 挂点选错，回到 D 层
 
 > 结论分级照抄 `01_架构.md` §5：`[事实]` / `[推断]` / `[未验证]` / `[未取得]`。**「未取得」不许写成「没有」**；生产 `memory.db`/`ledger.db`、生产 9136 源码、3876 全量页面都属未取得，见 `00_读我_AI-FIRST.md`「包里没有什么」。
+
 
 ---
 
@@ -578,6 +616,7 @@ CREATE TABLE event(
 - 未对任何库执行 `SELECT` 取业务行；未统计任何业务表行数写进本文件。
 - InkOS 官方 `memory.db` 与 bridge `ledger.db` 是**互不相通的两条链**：Planner 输入清单不含 `story/longform/`，
   B 层账本写了也不影响写作上下文。
+
 
 ---
 
@@ -695,41 +734,43 @@ CREATE TABLE event(
 
 > 工具由模型在对话里自动调用（tool-registry），**无独立界面按钮**。
 
+
 ---
 
 ## 05_文件清单.md
 
 # 05 · 文件清单（包内全部文件 + 大小）
 
-> 生成 2026-11-10 21:00:01 · 共 **47** 个文件 · 合计 **572,092** 字节（未压缩，含本文件与清单文件）
+> 生成 2026-11-13 00:05 · 共 **58** 个文件 · 合计 **719,525** 字节（未压缩，含本文件与清单文件）
 
 | 包内路径 | 字节 |
 |:--|--:|
-| `00_读我_AI-FIRST.md` | 7,519 |
-| `01_架构.md` | 4,974 |
-| `02_现状与边界.md` | 5,327 |
+| `_MANIFEST.json` | 2,616 |
+| `00_读我_AI-FIRST.md` | 8,124 |
+| `01_架构.md` | 6,076 |
+| `02_现状与边界.md` | 6,731 |
 | `03_数据库结构.md` | 6,659 |
 | `04_接口清单.md` | 3,966 |
-| `05_文件清单.md` | 2,834 |
-| `06_核心文件导航.md` | 2,236 |
-| `_MANIFEST.json` | 2,616 |
-| `docs/00-团队共用底稿.md` | 10,109 |
+| `05_文件清单.md` | （本文件，重算后 2834 B 基线） |
+| `06_核心文件导航.md` | 2,697 |
 | `docs/00-审计最终报告.md` | 8,227 |
-| `docs/B-数据库结构图.md` | 11,226 |
+| `docs/00-团队共用底稿.md` | 10,109 |
+| `docs/插件接口摘要.md` | 1,390 |
+| `docs/记忆系统审计.md` | 14,068 |
+| `docs/问题与缺口清单.md` | 5,756 |
+| `docs/系统模块清单与边界.md` | 4,102 |
+| `docs/写作Skill审计.md` | 13,712 |
+| `docs/用户操作指南.md` | 4,565 |
+| `docs/整体协同调用链.md` | 4,592 |
 | `docs/B-表结构字段说明.md` | 13,434 |
+| `docs/B-数据库结构图.md` | 11,226 |
 | `docs/P1-框架差异与付费墙地图.md` | 15,140 |
-| `docs/P2-B2-用户预设行片段.md` | 10,002 |
 | `docs/P2-能力补齐落地.md` | 13,516 |
+| `docs/P2-B2-用户预设行片段.md` | 10,002 |
 | `docs/P3-界面可见性与调用清单.md` | 23,565 |
 | `docs/P4-独立QA结果与残留缺口.md` | 13,641 |
 | `docs/V1-真实界面最终验收.md` | 5,831 |
-| `docs/写作Skill审计.md` | 13,712 |
-| `docs/插件接口摘要.md` | 1,390 |
-| `docs/整体协同调用链.md` | 4,592 |
-| `docs/用户操作指南.md` | 4,565 |
-| `docs/系统模块清单与边界.md` | 4,102 |
-| `docs/记忆系统审计.md` | 14,068 |
-| `docs/问题与缺口清单.md` | 5,756 |
+| `docs/V2-更新说明-20261113.md` | 6,349 |
 | `src/A_引导器壳/launch.mjs` | 25,165 |
 | `src/A_引导器壳/main.mjs` | 11,700 |
 | `src/A_引导器壳/package.json` | 232 |
@@ -739,27 +780,38 @@ CREATE TABLE event(
 | `src/B_产品壳/hub-profile-patch.mjs` | 12,086 |
 | `src/B_产品壳/main.js` | 96,810 |
 | `src/B_产品壳/runtime-env.mjs` | 1,677 |
-| `src/D_技能Skills/SKILL-axu-novel.md` | 11,634 |
-| `src/D_技能Skills/SKILL-inkos-novel-system.md` | 7,676 |
-| `src/D_技能Skills/SKILL-linkos-novel.md` | 28,159 |
-| `src/D_技能Skills/SKILL-novel-studio.md` | 19,301 |
+| `src/D_插件/armor-llm.armor-core.mjs` | 6,068 |
+| `src/D_插件/armor-llm.armor.md` | 12,749 |
+| `src/D_插件/armor-llm.lib.index.js` | 3,994 |
+| `src/D_插件/armor-llm.package.json` | 496 |
+| `src/D_插件/armor-llm.proxy.mjs` | 6,204 |
 | `src/D_插件/dsh-inkos-bridge.index.js` | 28,929 |
 | `src/D_插件/dsh-inkos-bridge.package.json` | 655 |
 | `src/D_插件/dsh-inkos-panel.client.js` | 27,472 |
 | `src/D_插件/dsh-inkos-panel.lib.index.js` | 4,245 |
 | `src/D_插件/dsh-inkos-panel.package.json` | 637 |
+| `src/D_插件/dsh-local-web.index.js` | 10,395 |
+| `src/D_插件/dsh-local-web.package.json` | 558 |
 | `src/D_插件/dsh-scene9136.index.js` | 44,038 |
 | `src/D_插件/dsh-scene9136.package.json` | 737 |
-| `src/D_用户Profile/cordis.patch-脱敏.yml` | 19,569 |
+| `src/D_插件/dsh-style-assets.index.js` | 89,741 |
+| `src/D_插件/dsh-style-assets.package.json` | 702 |
+| `src/D_插件/dsh-style-assets.README.md` | 3,398 |
+| `src/D_技能Skills/SKILL-axu-novel.md` | 11,634 |
+| `src/D_技能Skills/SKILL-inkos-novel-system.md` | 7,676 |
+| `src/D_技能Skills/SKILL-linkos-novel.md` | 28,159 |
+| `src/D_技能Skills/SKILL-novel-studio.md` | 19,301 |
+| `src/D_用户Profile/cordis.patch-脱敏.yml` | 22,776 |
 | `src/D_用户Profile/hermes-profile.package.json` | 246 |
 
 ## 结构
 
-- 根目录 7 件套：`00_读我_AI-FIRST.md` … `06_核心文件导航.md` + `_MANIFEST.json`
-- `src/`：A/B/D 四层源码原文（已脱敏），按真源层建子目录
-- `docs/`：项目自带审计 / 施工 / QA / 用户说明 原版（已脱敏）
+- 根目录 8 件套：`00_读我_AI-FIRST.md` … `06_核心文件导航.md` + `_MANIFEST.json`
+- `src/`：A/B/D 四层源码原文（已脱敏），按真源层建子目录；**v2 新增 10 个插件源码**
+- `docs/`：项目自带审计 / 施工 / QA / 用户说明 原版（已脱敏）+ **v2 更新说明 1 份**
 
-> 注：C 内嵌 DSH 引擎（`node_modules` 229+33 包）与生产库/大素材按硬约束不收，见 `00_读我`「包里没有什么」。
+> 注：C 内嵌 DSH 引擎（`node_modules` 229+33 包）、`writerx-*` 运行态业务数据、生产库与大素材按硬约束不收，见 `00_读我`「包里没有什么」。
+
 
 ---
 
@@ -792,6 +844,97 @@ CREATE TABLE event(
 | `src/D_技能Skills/SKILL-linkos-novel.md` | LinkOS 账本系（文首声明账本层实测不可用） |
 | `docs/P1-框架差异与付费墙地图.md` | 与沟通端 DSH 的逐条 diff + 三类付费墙 + 三档边界 |
 | `docs/P4-独立QA结果与残留缺口.md` | 独立 QA 同意/存疑判定 + 残留缺口 R1–R10 |
+
+| `src/D_插件/armor-llm.lib.index.js` | v2 新增：本地 LLM 代理/改写层入口（junction → `plugins\armor-llm`） |
+| `src/D_插件/dsh-local-web.index.js` | v2 新增：本机 web 通道插件 |
+| `src/D_插件/dsh-style-assets.index.js` | v2 新增：文风/场景资产与 schema 校验（89 KB） |
+| `docs/V2-更新说明-20261113.md` | v2 相对 v1 的全部架构性变化、脱敏口径、未验证项与「未收 ≠ 不存在」清单 |
+
+
+---
+
+## docs/V2-更新说明-20261113.md（v2 增量）
+
+# V2 · 更新说明（2026-11-13 00:05 Asia/Shanghai）
+
+> 对照 baseline = `v1`（tag `v1`，commit `938d477`）。本文件只记**本机生产真源在 v1 之后发生的架构性变化**，
+> 以及本仓库为反映它而补进的脱敏源码/文档。全程只读生产，未改 H:/F: 一个字节，未重启、未起服务。
+
+## 1. 变化定位（哪个层变了）
+
+| 层 | v1（11-10 21:00 快照） | v2（11-13 实测） | 结论 |
+|:--|:--|:--|:--|
+| A 引导器壳 | `resources\app.asar` 11-08 22:33 · 57,087 B · sha `19996C67…` | 同左，未改 | **无变化** |
+| B 产品壳 | `app\1007\app.asar` 11-09 00:27 · 1,433,385 B · sha `6EDDCF11…` | 同左，未改 | **无变化** |
+| C 内嵌 DSH 引擎 | 229 + 33 包（不搬） | 未复查全库 | **未取得**（沿用 v1 口径） |
+| **D 用户 Profile** | `cordis.patch.yml` 576 行 / 19,569 B（脱敏版） | **670 行 / 22,799 B**，`- id:` 共 **63** 个 | **实质变化** |
+| **D 插件** | `@local/` 3 个 | **6 个**（+3） | **实质变化** |
+| D 技能 | `skills\` junction → `I:\DSHHome\skills`（21 个） | 目录 289 文件，未逐一比对 | **未逐一验证** |
+| **E 运行态模块** | 未单列 | 新增一批 `writerx-*` 数据目录 | **只记结构，不收业务数据** |
+| 更新器 | `update\release.json` / `service.json` / `journal.jsonl` | 11-13 00:00 有写盘 | 属运行态记账，**不收包** |
+
+## 2. D 层 · cordis.patch.yml 结构变化（值已脱敏）
+
+- 行数 576 → **670**、字节 19,569 → **22,799**、`- id:` 从 v1 的少数挂点扩到 **63** 个。
+- 63 个 id 分四类：① 主题/界面（`ui-theme`、`ui-book-library`、`ui-chat`、`agent-default-model`、`writerx-hub-limits`）；
+  ② **模型档**（本机 Ollama `qwen3-vl:8b` + Hub/多家上游的 `*-free` / `deepseek-v4*` / `glm-5*` /
+  `gpt-6*` / `gemini-3*` / `grok-4*` / `mimo-v2*` / `doubao-seed-*` 等，**均为模型 id 名，不是密钥**）；
+  ③ 插件与桥（`armor-llm`、`inkos-bridge`、`inkos-panel`、`purge-host`、`scene9136`、`web`、`web-search-local-modsearch`）；
+  ④ 上述模型档的 provider 路由行（`opencode-go2/*`、`command/*`、`wb/cn:*`、`trae/*`、`raccoon/*` 等）。
+- 敏感字段**名**保留（`apiKeyEnv` / `maxTokensField` / `modelMaxOutputTokens` 等），**值**一律占位；
+  外部 Hub 端点统一 `<HUB_ENDPOINT>`，本机 `http://127.0.0.1:11434/v1` 保留（非外部端点）。
+- **字段级扫描结果**：`sk-` / `eyJ` / `gh*_` / `github_pat_` / `Bearer 实串` / `AKIA` / 私钥块 / 明文口令值 = **0 命中**。
+- ⚠️ **未验证**：这些新增模型档/插件行是否在真实界面被加载、是否可调用 —— 本轮只做静态结构比对，
+  没有重启 WriterX、没有点界面。**行数变多 ≠ 功能可用**。
+
+## 3. D 层 · @local 插件 3 → 6（新增 3 个）
+
+| 插件 | 真源形态 | 本仓库收了什么 | 职责（据源码/自述，未实调） |
+|:--|:--|:--|:--|
+| `dsh-armor-llm` | junction → `profiles\hermes\plugins\armor-llm` | `lib\index.js`、`lib\armor-core.mjs`、`proxy.mjs`、`armor.md`、`package.json` | 本地 LLM 代理/改写层（armor 规则 + proxy） |
+| `dsh-local-web` | 实目录 | `index.js`、`package.json` | 本机 web 通道插件 |
+| `dsh-style-assets` | 实目录（**自带 `.git`**） | `index.js`（89 KB）、`package.json`、`README.md` | 文风/场景资产与 schema 校验 |
+| 原有 3 个 | `dsh-inkos-bridge` / `dsh-inkos-panel` / `dsh-scene9136` | v1 已收，未改 | 见 `06_核心文件导航.md` |
+
+**有意不收**：`dsh-style-assets\.git\` 整棵树（版本库对象）、`*.bak-*`/`*.log`/`test\`（备份与探针）、
+`schema\*.schema.json`（结构定义，非源码；需要时可单独补）、`armor.md.armed.log`、`.bak-armed-*`。
+**这些是「未收」不是「不存在」**。
+
+## 4. E 层 · 新增 writerx-* 运行态模块（只登记结构）
+
+| 目录 | 文件数 | 内容性质 | 是否收包 |
+|:--|--:|:--|:--|
+| `writerx-file-history` | 2,942 | 编辑历史对象（`.gz`） | ❌ 业务数据 |
+| `writerx-creation-originals` | 36 | 创作原文 / 未完成输出 `.txt` | ❌ 正文与聊天原文 |
+| `writerx-decompose` | 14 | 拆书产物 `.json`（2.4 MB） | ❌ 业务数据 |
+| `writerx-style-assets` | 28 | 文风资产 `.json` + `.bak-*` | ❌ 业务数据 + 备份 |
+| `writerx-rankscan` | 1 | `rank-sources.json` 70 KB | ❌ 业务数据 |
+| `writerx-book-sources` | 1 | `book-sources.json` | ❌ 业务数据 |
+| `writerx-backgrounds` | 1 | 配置快照 | ❌ 运行态 |
+| `writerx-uploads` / `writerx-materials` / `writerx-manuscript-imports` | 0 | 空目录 | ❌ 无内容 |
+| `attachments` / `sessions` / `storages` / `.hub` / `.credentials.yaml` | — | 附件、会话、聊天原文、凭据 | ❌ **高危，一个字节未进包** |
+
+> 判定：这些目录说明「软件在用、有编辑历史与素材」，**不是架构源码**。搬进仓库只会把业务数据与
+> 可能的会话串带上去，且体积失控。故只在本文档登记存在与数量，不搬文件。
+
+## 5. 端口 / 书库 / 未取得项（沿用 v1，未重新验）
+
+`3876` WriterX web（需 token）｜`9136` 生产推演｜`9137` 隔离副本（v1 时停，本轮**未复测**）。
+生产 `memory.db` / `ledger.db`、生产 9136 服务源码、3876 全量页面、Hub 之外 provider 全库穷举 —— **仍未取得**，
+不是「没有」。`03_数据库结构.md` 的 DDL 仍取自隔离副本。
+
+## 6. 本轮对仓库做了什么
+
+- `src/D_用户Profile/cordis.patch-脱敏.yml` 按 670 行新结构重建（值级脱敏，0 命中）。
+- `src/D_插件/` 补 3 个新插件共 10 个关键源码文件。
+- `01_架构.md` / `02_现状与边界.md` / `05_文件清单.md` / `06_核心文件导航.md` / `_MANIFEST.json`
+  与仓库根 `README.md` / `llms.txt` / `03_怎么改.md` / `WriterX-Hermes-自包含包.md` 同步到 v2 口径。
+- `docs/V2-更新说明-20261113.md` = 本文件。
+- 其余 `docs/` 施工 / 审计 / QA 原版 **保持 v1 原样**（历史证据，不回写、不改写）。
+
+**生产零改动**：H: 签名件、F: `dsh-home`、正式小说、生产库、9136/9137 服务、运行中的 WriterX 全部未动。
+回滚本版：`git checkout v1 -- <文件>`；仓库历史不清空、不 force push。
+
 
 ---
 
@@ -1061,25 +1204,41 @@ CREATE TABLE event(
 
 ---
 
-## 初始版上传交付说明（2026-11-11 16:40 Asia/Shanghai）
+### v2 新增源码索引（2026-11-13，静态登记）
+
+- `src/D_插件/armor-llm.lib.index.js` · `lib\armor-core.mjs` · `proxy.mjs` —— 本地 LLM 代理/改写层；真源为 junction → `profiles\hermes\plugins\armor-llm`
+- `src/D_插件/dsh-local-web.index.js` —— 本机 web 通道插件（10 KB）
+- `src/D_插件/dsh-style-assets.index.js` —— 文风/场景资产与 schema 校验（89 KB，自带 `.git` 未收）
+- `src/D_用户Profile/cordis.patch-脱敏.yml` —— 670 行 / 63 个 `- id:`；敏感**字段名**保留、值全部占位
+- 以上均为**结构登记**：未重启、未点界面、未验证可调用。
 
 
-- 仓库：`sunxiaohu66322/writerx-hermes-architecture`（PUBLIC），由 DSH skill `github-project-push` 上传。
-- 内容 = 现成脱敏离线包 47 文件（八件套 + `src/` 22 + `docs/` 17）+ 仓库根导航（README / llms.txt / 00读我 / 01架构 / 02现状 / 03怎么改 / 自包含包 / 话术）+ 版本记录（CHANGELOG / VERSIONS）。
-- 真源分层：A 引导器壳（H: 签名件只读）/ B 产品壳（3876）/ C 内嵌 DSH 引擎（不搬）/ **D 用户 Profile（一切可改项）** / E 融合模块（9136·书库）。WriterX 是 **DSH 套壳**，被改的是收费闸与预设开关。
-- 脱敏：密钥/Token/Cookie/密码/会话串/私钥的**值**一律 `===REDACTED===`；配置只给字段名与结构；数据库只给 DDL 与表名、不给业务行。敏感值正则扫描 **0 命中**。高危凭据 `.credentials.yaml`、`Network\Cookies`、`server.log` token 行、`sessions\*.jsonl.zstd`、`storages\session_projcache\*.json` 一个字节未进仓库。
-- 排除：`node_modules`、`dist/`、`build/`、缓存、`*.bak-*`、探针、图片视频、模型权重、完整小说正文、聊天原文，路径命中 **0**。
-- 生产零改动：未改源码/配置/数据库/正式小说、未重启、未起服务、未装依赖。
+---
+
+## v2 上传交付说明（2026-11-13 00:05 Asia/Shanghai）
+
+仓库：`sunxiaohu66322/writerx-hermes-architecture`（PUBLIC）｜基线 `v1` = commit `938d477`｜本版 = `v2`（新 commit + annotated tag，历史不清空、不 force push）。
+
+**本轮改了什么**（相对 v1，全部为只读生产后的脱敏副本刷新）：
+① D 层 `cordis.patch.yml` 576 → **670 行 / 63 个 `- id:`**（新增模型档、provider 路由、插件桥），按值级脱敏重建，Hub 端点占位 1 处、密钥终检 0 命中；
+② `@local/` 插件 **3 → 6**，补 `dsh-armor-llm` / `dsh-local-web` / `dsh-style-assets` 共 **10 个关键源码**（134 KB），排除其 `.git` / 备份 / 测试 / schema；
+③ 新增 `docs/V2-更新说明-20261113.md`；`00/01/02/05/06`、仓库根 `README` / `llms.txt` / `03_怎么改.md` / 开场话术、本自包含包全部同步到 v2 口径；
+④ A/B 签名件（`resources\app.asar` / `app\1007\app.asar`）sha 与 v1 **全等，未改**；
+⑤ 新增一批 `writerx-*` 运行态数据目录（编辑历史 2,942 文件 / 创作原文 36 / 拆书 14 / 文风 28 / 榜单 / 书源 / 背景）与 `update\journal.jsonl` —— **只登记数量，不搬文件**。
+
+**未验证（不得写成成果）**：新增配置行是否被引擎加载、3 个新插件是否可调用、9136/9137 当前状态、生产库定位 —— v2 未重启 WriterX、未点界面、未复测端口。v1 的 5 条已知问题与 R1–R10 全部沿用，**行数变多 ≠ 功能可用**。
+
+**脱敏与排除**：密钥值（`sk-` / `eyJ` / `gh*_` / `github_pat_` / `Bearer 实串` / `AKIA` / 私钥块 / 口令值）0 命中；`.credentials.yaml`、`Network\Cookies`、`session_projcache\*.json`、聊天原文、小说正文、`.git`、`*.bak-*`、探针一律未收。「未收」≠「不存在」。
+
+---
 
 ## 未取得项（不是「没有」）
 
-- 生产 `memory.db` / `ledger.db`（书库合并后 F: 作品树递归 0 个 `.db`；本仓库 `03_数据库结构.md` 的 DDL 取自 J: 隔离副本）
-- 生产 9136 服务源码（抓到的是 9137 隔离副本 `服务.py`）
-- Hub 之外是否存在其它 provider 的全库穷举（仅 `@writerx/` 包内抽查）
-- 任何业务表行数（未执行 `SELECT`）
-- `dsh-inkos-panel` 浏览器半渲染、9136 双 pythonw 监听归属、完整 3876 页面（需 token）
+生产 `memory.db` / `ledger.db`（书库合并后 F: 作品树递归 0 个 `.db`，DDL 取自隔离副本）｜生产 9136 服务源码（抓到的是 9137 隔离副本）｜Hub 之外其它 provider 全库穷举｜任何业务表行数（未执行 `SELECT`）｜3876 全量页面（需 token）｜v2 新增行的运行时加载验证。
 
-## 已知缺口（初始版，不是验收通过）
+---
+
+## 已知缺口（v1 沿用，v2 未重验，不是验收通过）
 
 9137 无监听而插件 baseUrl 指向它 → 界面 plan/check/apply 当前必失败；apply 卡人工 approval 文件；InkOS 检索链未进界面写作上下文；「界面看不到」的真正解决（新增 `linkos` 技能 / 覆盖 `disabled`）未实施；启动方式脆弱（只有 explorer 双击 .lnk 能起）。完整清单见 `02_现状与边界.md` §4–§5 与 `docs/P4-独立QA结果与残留缺口.md`（R1–R10）。
 
@@ -1087,9 +1246,9 @@ CREATE TABLE event(
 
 ## 提建议四条格式（固定，请照这个回）
 
-1. **依据哪个文件**（`01_架构.md` / `src/xxx` / `docs/xxx` / `02_现状与边界.md` / 本文件某一节）
+1. **依据哪个文件**（`01_架构.md` / `src/xxx` / `docs/xxx` / `02_现状与边界.md` / `docs/V2-更新说明-20261113.md` / 本文件某一节）
 2. 说的是**现有能力**还是**需要新增**
 3. **改动落在哪一层**：A 引导器 / B 产品壳 / C 内嵌引擎 / **D 用户 Profile（含插件·技能）** / E 融合模块（9136·书库）
 4. 若建议改 `node_modules/`、`dist/`、`H:` 签名安装件 → 挂点选错，回到 D 层
 
-**别误读**：`InkOS` / `LinkOS` / `9136` / `novel-studio` / `axu-novel` / `linkos-novel` 是本项目合法组成，不是串台；「未收」≠「不存在」、「未取得」≠「没有」；`HTTP 200 ≠ 通过`、`候选 ≠ 正史`。
+**别误读**：`InkOS` / `LinkOS` / `9136` / `novel-studio` / `axu-novel` / `linkos-novel` 是本项目合法组成，不是串台；「未收」≠「不存在」、「未取得」≠「没有」；`HTTP 200 ≠ 通过`、`候选 ≠ 正史`、`写了配置 ≠ 已加载`。

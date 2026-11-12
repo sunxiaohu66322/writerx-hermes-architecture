@@ -1,0 +1,18 @@
+{
+  "name": "@local/dsh-local-web",
+  "description": "把 WriterX Hermes 的 web_search 从会员制 WriterX Hub 改道本机 modsearch（ctx.web.registerSearchProvider 官方扩展点），联网搜索不再需要会员",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "files": ["index.js"],
+  "license": "UNLICENSED",
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^0.1.0-rc.5",
+    "@deepseek-ai/schemastery": "^0.1.0-rc.5"
+  }
+}

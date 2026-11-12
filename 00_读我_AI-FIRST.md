@@ -1,6 +1,6 @@
 # WriterX Hermes · 整套项目包（发给外部 AI 的第一站）
 
-> 打包时间：2026-11-10 21:00:57　|　用途：让看不到本机、打不开端口、只能读附件的外部 AI 读懂本项目
+> 打包时间：v1 = 2026-11-10 21:00:57　|　**v2 刷新：2026-11-13 00:05**（D 层配置与新插件，详见 `docs/V2-更新说明-20261113.md`）　|　用途：让看不到本机、打不开端口、只能读附件的外部 AI 读懂本项目
 > 「是什么 / 由哪几层组成 / 数据怎么流 / 现在做到哪一步 / 哪些还没做」
 > 生成方式：磁盘实测 + ASAR 解包 + 源码字符串抓取 + 自动脱敏。密钥值一律 `===REDACTED===`。
 > **本包是架构说明书，不是调查报告、不是设计方案、不是源码压缩包。**
@@ -26,7 +26,7 @@
 | **A 引导器/壳** | `H:\新建文件夹\WriterX Hermes\resources\app.asar`（签名件，只读） | 单实例锁、选 build、记账、import 载荷 | `src/A_引导器壳/` |
 | **B 产品壳** | `H:\新建文件夹\WriterX Hermes\app\1007\app.asar` | 起 dsh web server 子进程（**端口 3876**）、URL token 换 HttpOnly cookie | `src/B_产品壳/` |
 | **C 内嵌 DSH 引擎** | `H:\新建文件夹\WriterX Hermes\app\1007\dsh\node_modules`（`@deepseek-ai/*` 229 包 + `@writerx/*` 33 包） | 完整 DSH agent 引擎 | 不搬（体积/依赖），见 `01_架构.md` |
-| **D 用户 Profile** | `F:\Users\Administrator\AppData\Roaming\WriterX Hermes\dsh-home\profiles\hermes\`（含 `dsh-home\`） | `cordis.patch.yml` + `@local/` 三插件 + `skills\`（junction → `I:\DSHHome\skills`） | `src/D_用户Profile/`、`src/D_插件/`、`src/D_技能Skills/` |
+| **D 用户 Profile** | `F:\Users\Administrator\AppData\Roaming\WriterX Hermes\dsh-home\profiles\hermes\`（含 `dsh-home\`） | `cordis.patch.yml`（v2 = 670 行 / 63 个 `- id:`）+ `@local/` 六插件 + `skills\`（junction → `I:\DSHHome\skills`） | `src/D_用户Profile/`、`src/D_插件/`、`src/D_技能Skills/` |
 | **E 融合模块** | 9136 推演服务 / InkOS 书库 / 主书库 / 工程文档 | 场景推演 + 书库合并 + 能力补齐施工记录 | `docs/`、`02/03/04` |
 
 - **主书库**：`F:\Users\Administrator\Documents\WriterX\作品`
@@ -43,9 +43,9 @@
 3. `03_数据库结构.md` —— 全部表 DDL + 表数（**不含任何数据行**）
 4. `04_接口清单.md` —— 从源码抓的 `/api/*` 与路由
 5. `06_核心文件导航.md` —— 点名 10–20 个关键文件
-6. `src/` —— 分层后的源码原文（已脱敏），按 A/B/D 真源层建子目录
-7. `docs/` —— 项目自带审计 / 施工 / QA / 用户说明 原版（已脱敏）
-8. `05_文件清单.md` —— 包内全部文件与大小；`_MANIFEST.json` —— 机器可读清单
+6. `docs/V2-更新说明-20261113.md` —— **v2 相对 v1 的全部变化与未验证项**\n7. `src/` —— 分层后的源码原文（已脱敏），按 A/B/D 真源层建子目录
+8. `docs/` —— 项目自带审计 / 施工 / QA / 用户说明 原版（已脱敏）
+9. `05_文件清单.md` —— 包内全部文件与大小；`_MANIFEST.json` —— 机器可读清单
 
 ## 一句话结论
 
@@ -74,7 +74,7 @@
 | 图片 / 视频 / 模型权重 / 完整小说正文 / 聊天原文 | 大体积素材与业务数据，不是架构信息 | 0 命中 = 未收，不是不存在 |
 | `.credentials.yaml`、`Network\Cookies`、`server.log` 原文、`sessions\*.jsonl.zstd`、`storages\session_projcache\*.json` | **含密钥 / cookie / 会话串 / 聊天原文，一个字节都不进包** | 这些文件本机存在（或曾在），只是本包一律不收 |
 | API Key / Token / Cookie / 密码 / 会话串 / 私钥的**值** | 脱敏硬约束 | `===REDACTED===` = 该处原本有值，被替换；字段**名**保留不算泄漏 |
-| 生产 `memory.db` / `ledger.db`、完整 9136 服务源码、3876 全量页面 | 合并后生产库**未定位**；服务源码抓到的是 9137 隔离副本；页面需 token | **「未取得」≠「没有」**：见 `03_数据库结构.md` 与 `04_接口清单.md` 的原因说明 |
+| v2 新增的 `writerx-*` 运行态目录（编辑历史 / 创作原文 / 拆书产物 / 文风资产 / 榜单 / 书源）与 `update\\journal.jsonl` | 都是「软件在跑」的业务数据与记账，**不是架构源码**；只在 `docs/V2-更新说明` §4 登记数量，不搬文件 | 包内 0 命中 = 有意排除，不代表本机没有 |\n| 生产 `memory.db` / `ledger.db`、完整 9136 服务源码、3876 全量页面 | 合并后生产库**未定位**；服务源码抓到的是 9137 隔离副本；页面需 token | **「未取得」≠「没有」**：见 `03_数据库结构.md` 与 `04_接口清单.md` 的原因说明 |
 
 ## 想给建议时请说明
 
@@ -82,3 +82,4 @@
 - 说的是**现有能力**还是**需要新增**
 - **改动落在哪一层**：A 引导器 / B 产品壳 / C 内嵌引擎 / D 用户 Profile（含插件·技能）/ E 融合模块（9136·书库）
 - 若建议改 `node_modules/`、`dist/`、`H:` 签名安装件，那是挂点选错：H: 有完整性校验 + 自更新回滚，一切可改项在 **D 用户 Profile 层**
+

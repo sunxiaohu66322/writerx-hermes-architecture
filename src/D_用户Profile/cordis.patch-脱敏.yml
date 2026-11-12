@@ -37,12 +37,28 @@
           supportsStore: false
           supportsDeveloperRole: false
         models:
-          - id: writerx-free
-            name: writerx-free
-            presentation:
+          - id: ernie-5.5-flash-preview-free
+            name: ernie-5.5-flash-preview
+            presentation: &ref_0
               sectionId: writerx-free
               sectionName: 免费模型
               sectionOrder: 0
+            contextWindow: 1000000
+            maxTokens: 128000
+            reasoningEfforts: false
+            input:
+              - text
+          - id: writerx-free
+            name: writerx-free
+            presentation: *ref_0
+            contextWindow: 1000000
+            maxTokens: 64000
+            reasoningEfforts: false
+            input:
+              - text
+          - id: step-5-preview-free
+            name: step-5-preview-free
+            presentation: *ref_0
             contextWindow: 1000000
             maxTokens: 64000
             reasoningEfforts: false
@@ -50,10 +66,7 @@
               - text
           - id: deepseek-v4.1-flash-free
             name: deepseek-v4.1-flash-free
-            presentation:
-              sectionId: writerx-free
-              sectionName: 免费模型
-              sectionOrder: 0
+            presentation: *ref_0
             contextWindow: 500000
             maxTokens: 128000
             reasoningEfforts: false
@@ -61,10 +74,7 @@
               - text
           - id: deepseek-v4-flash-free
             name: deepseek-v4-flash-free
-            presentation:
-              sectionId: writerx-free
-              sectionName: 免费模型
-              sectionOrder: 0
+            presentation: *ref_0
             contextWindow: 1000000
             maxTokens: 384000
             reasoningEfforts: false
@@ -72,10 +82,7 @@
               - text
           - id: glm-5.3-flash-free
             name: glm-5.3-flash-free
-            presentation:
-              sectionId: writerx-free
-              sectionName: 免费模型
-              sectionOrder: 0
+            presentation: *ref_0
             contextWindow: 1000000
             maxTokens: 128000
             reasoningEfforts: false
@@ -83,10 +90,7 @@
               - text
           - id: hy4-preview-free
             name: hy4-preview-free
-            presentation:
-              sectionId: writerx-free
-              sectionName: 免费模型
-              sectionOrder: 0
+            presentation: *ref_0
             contextWindow: 1000000
             maxTokens: 64000
             reasoningEfforts: false
@@ -94,20 +98,14 @@
               - text
           - id: dots3-note-prev
             name: dots3-note-prev
-            presentation:
-              sectionId: writerx-free
-              sectionName: 免费模型
-              sectionOrder: 0
+            presentation: *ref_0
             maxTokens: 128000
             reasoningEfforts: false
             input:
               - text
           - id: ur2-gemini-3.5-flash-free
             name: Gemini-3.5-Flash-Lite-Free
-            presentation:
-              sectionId: writerx-free
-              sectionName: 免费模型
-              sectionOrder: 0
+            presentation: *ref_0
             contextWindow: 900000
             maxTokens: 65000
             reasoningEfforts: false
@@ -115,10 +113,7 @@
               - text
           - id: ur2-gemini-3.6-flash-free
             name: Gemini-3.6-Flash-Free
-            presentation:
-              sectionId: writerx-free
-              sectionName: 免费模型
-              sectionOrder: 0
+            presentation: *ref_0
             contextWindow: 900000
             maxTokens: 65000
             reasoningEfforts: false
@@ -126,7 +121,7 @@
               - text
           - id: deepseek-v4-flash
             name: deepseek-v4-flash
-            presentation:
+            presentation: &ref_1
               sectionId: writerx-premium
               sectionName: 专供模型（按用量）
               sectionOrder: 1
@@ -137,24 +132,21 @@
               medium: high
               high: max
               minimal: low
-              off: none
+              'off': none
               max: max
             metadata:
               writerx.reasoning.parameter: reasoningPreference
-              writerx.reasoning.label.low: Off
+              writerx.reasoning.label.low: 'Off'
               writerx.reasoning.label.medium: High
               writerx.reasoning.label.high: Max
               writerx.reasoning.label.minimal: Low
-              writerx.reasoning.label.off: Off
+              writerx.reasoning.label.off: 'Off'
               writerx.reasoning.label.max: Max
             input:
               - text
           - id: deepseek-v4.1-flash
             name: deepseek-v4.1-flash
-            presentation:
-              sectionId: writerx-premium
-              sectionName: 专供模型（按用量）
-              sectionOrder: 1
+            presentation: *ref_1
             contextWindow: 1000000
             maxTokens: 384000
             reasoningEfforts:
@@ -162,24 +154,21 @@
               medium: high
               high: max
               minimal: low
-              off: none
+              'off': none
               max: max
             metadata:
               writerx.reasoning.parameter: reasoningPreference
-              writerx.reasoning.label.low: Off
+              writerx.reasoning.label.low: 'Off'
               writerx.reasoning.label.medium: High
               writerx.reasoning.label.high: Max
               writerx.reasoning.label.minimal: Low
-              writerx.reasoning.label.off: Off
+              writerx.reasoning.label.off: 'Off'
               writerx.reasoning.label.max: Max
             input:
               - text
           - id: glm-5.3
             name: glm-5.3
-            presentation:
-              sectionId: writerx-premium
-              sectionName: 专供模型（按用量）
-              sectionOrder: 1
+            presentation: *ref_1
             contextWindow: 1000000
             maxTokens: 128000
             reasoningEfforts:
@@ -197,10 +186,7 @@
               - text
           - id: glm-5.3-flash
             name: glm-5.3-flash
-            presentation:
-              sectionId: writerx-premium
-              sectionName: 专供模型（按用量）
-              sectionOrder: 1
+            presentation: *ref_1
             contextWindow: 1000000
             maxTokens: 128000
             reasoningEfforts:
@@ -216,49 +202,93 @@
               writerx.reasoning.label.max: Max
             input:
               - text
+          - id: doubao-seed-2.1-pro
+            name: 豆包-2.1-pro
+            presentation: *ref_1
+            contextWindow: 1000000
+            maxTokens: 256000
+            reasoningEfforts:
+              low: low
+              medium: medium
+              high: high
+            metadata:
+              writerx.reasoning.parameter: reasoning_effort
+              writerx.reasoning.label.low: Low
+              writerx.reasoning.label.medium: Medium
+              writerx.reasoning.label.high: High
+            input:
+              - text
           - id: doubao-seed-2.1-turbo
-            name: 豆包-2.1
-            presentation:
-              sectionId: writerx-premium
-              sectionName: 专供模型（按用量）
-              sectionOrder: 1
+            name: 豆包-2.1-turbo
+            presentation: *ref_1
             contextWindow: 200000
             maxTokens: 256000
-            reasoningEfforts: false
+            reasoningEfforts:
+              low: low
+              medium: medium
+              high: high
+            metadata:
+              writerx.reasoning.parameter: reasoning_effort
+              writerx.reasoning.label.low: Low
+              writerx.reasoning.label.medium: Medium
+              writerx.reasoning.label.high: High
+            input:
+              - text
+          - id: doubao-seed-2.1-lite
+            name: 豆包-2.1-lite
+            presentation: *ref_1
+            contextWindow: 1000000
+            maxTokens: 256000
+            reasoningEfforts:
+              low: low
+              medium: medium
+              high: high
+            metadata:
+              writerx.reasoning.parameter: reasoning_effort
+              writerx.reasoning.label.low: Low
+              writerx.reasoning.label.medium: Medium
+              writerx.reasoning.label.high: High
             input:
               - text
           - id: mimo-v2.6-flash
             name: mimo-v2.6-flash
-            presentation:
-              sectionId: writerx-premium
-              sectionName: 专供模型（按用量）
-              sectionOrder: 1
+            presentation: *ref_1
             contextWindow: 900000
             maxTokens: 128000
-            reasoningEfforts: false
+            reasoningEfforts:
+              low: low
+              medium: medium
+              high: high
+            metadata:
+              writerx.reasoning.parameter: reasoning_effort
+              writerx.reasoning.label.low: Low
+              writerx.reasoning.label.medium: Medium
+              writerx.reasoning.label.high: High
             input:
               - text
           - id: mimo-v2.6-pro
             name: mimo-v2.6-pro
-            presentation:
-              sectionId: writerx-premium
-              sectionName: 专供模型（按用量）
-              sectionOrder: 1
+            presentation: *ref_1
             contextWindow: 900000
             maxTokens: 128000
-            reasoningEfforts: false
+            reasoningEfforts:
+              low: low
+              medium: medium
+              high: high
+            metadata:
+              writerx.reasoning.parameter: reasoning_effort
+              writerx.reasoning.label.low: Low
+              writerx.reasoning.label.medium: Medium
+              writerx.reasoning.label.high: High
             input:
               - text
           - id: gpt-6-luna
             name: gpt-6-luna
-            presentation:
-              sectionId: writerx-premium
-              sectionName: 专供模型（按用量）
-              sectionOrder: 1
+            presentation: *ref_1
             contextWindow: 900000
             maxTokens: 128000
             reasoningEfforts:
-              off: none
+              'off': none
               low: low
               medium: medium
               high: high
@@ -266,7 +296,7 @@
               max: max
             metadata:
               writerx.reasoning.parameter: reasoning_effort
-              writerx.reasoning.label.off: Off
+              writerx.reasoning.label.off: 'Off'
               writerx.reasoning.label.low: Low
               writerx.reasoning.label.medium: Medium
               writerx.reasoning.label.high: High
@@ -276,21 +306,29 @@
               - text
           - id: gpt-6.1-terra
             name: gpt-6.1-terra
-            presentation:
-              sectionId: writerx-premium
-              sectionName: 专供模型（按用量）
-              sectionOrder: 1
+            presentation: *ref_1
             contextWindow: 100000
             maxTokens: 128000
-            reasoningEfforts: false
+            reasoningEfforts:
+              'off': none
+              low: low
+              medium: medium
+              high: high
+              xhigh: xhigh
+              max: max
+            metadata:
+              writerx.reasoning.parameter: reasoning_effort
+              writerx.reasoning.label.off: 'Off'
+              writerx.reasoning.label.low: Low
+              writerx.reasoning.label.medium: Medium
+              writerx.reasoning.label.high: High
+              writerx.reasoning.label.xhigh: Xhigh
+              writerx.reasoning.label.max: Max
             input:
               - text
           - id: gemini-3.7-flash
             name: gemini-3.7-flash
-            presentation:
-              sectionId: writerx-premium
-              sectionName: 专供模型（按用量）
-              sectionOrder: 1
+            presentation: *ref_1
             maxTokens: 65000
             reasoningEfforts:
               low: low
@@ -305,10 +343,7 @@
               - text
           - id: gemini-4-argon
             name: gemini-4-argon
-            presentation:
-              sectionId: writerx-premium
-              sectionName: 专供模型（按用量）
-              sectionOrder: 1
+            presentation: *ref_1
             contextWindow: 1000000
             maxTokens: 65000
             reasoningEfforts:
@@ -322,16 +357,29 @@
               writerx.reasoning.label.high: High
             input:
               - text
-          - id: claude-haiku-5.5
-            name: claude-haiku-5.5
-            presentation:
-              sectionId: writerx-premium
-              sectionName: 专供模型（按用量）
-              sectionOrder: 1
+          - id: gemini-4-carbon
+            name: gemini-4-carbon
+            presentation: *ref_1
             contextWindow: 1000000
             maxTokens: 128000
             reasoningEfforts:
-              off: none
+              low: low
+              medium: medium
+              high: high
+            metadata:
+              writerx.reasoning.parameter: reasoning_effort
+              writerx.reasoning.label.low: Low
+              writerx.reasoning.label.medium: Medium
+              writerx.reasoning.label.high: High
+            input:
+              - text
+          - id: claude-haiku-5.5
+            name: claude-haiku-5.5
+            presentation: *ref_1
+            contextWindow: 1000000
+            maxTokens: 128000
+            reasoningEfforts:
+              'off': none
               low: low
               medium: medium
               high: high
@@ -339,7 +387,7 @@
               max: max
             metadata:
               writerx.reasoning.parameter: reasoning_effort
-              writerx.reasoning.label.off: Off
+              writerx.reasoning.label.off: 'Off'
               writerx.reasoning.label.low: Low
               writerx.reasoning.label.medium: Medium
               writerx.reasoning.label.high: High
@@ -349,35 +397,50 @@
               - text
           - id: grok-4.5
             name: grok-4.5
-            presentation:
-              sectionId: writerx-premium
-              sectionName: 专供模型（按用量）
-              sectionOrder: 1
+            presentation: *ref_1
             contextWindow: 400000
             maxTokens: 128000
-            reasoningEfforts: false
+            reasoningEfforts:
+              low: low
+              medium: medium
+              high: high
+            metadata:
+              writerx.reasoning.parameter: reasoning_effort
+              writerx.reasoning.label.low: Low
+              writerx.reasoning.label.medium: Medium
+              writerx.reasoning.label.high: High
             input:
               - text
           - id: grok-4.6
             name: grok-4.6
-            presentation:
-              sectionId: writerx-premium
-              sectionName: 专供模型（按用量）
-              sectionOrder: 1
+            presentation: *ref_1
             contextWindow: 400000
             maxTokens: 128000
-            reasoningEfforts: false
+            reasoningEfforts:
+              low: low
+              medium: medium
+              high: high
+            metadata:
+              writerx.reasoning.parameter: reasoning_effort
+              writerx.reasoning.label.low: Low
+              writerx.reasoning.label.medium: Medium
+              writerx.reasoning.label.high: High
             input:
               - text
           - id: grok-4.7
             name: grok-4.7
-            presentation:
-              sectionId: writerx-premium
-              sectionName: 专供模型（按用量）
-              sectionOrder: 1
+            presentation: *ref_1
             contextWindow: 400000
             maxTokens: 128000
-            reasoningEfforts: false
+            reasoningEfforts:
+              low: low
+              medium: medium
+              high: high
+            metadata:
+              writerx.reasoning.parameter: reasoning_effort
+              writerx.reasoning.label.low: Low
+              writerx.reasoning.label.medium: Medium
+              writerx.reasoning.label.high: High
             input:
               - text
       dsh:
@@ -435,9 +498,17 @@
 - id: writerx-hub-limits
   config:
     hubOrigin: https://hub.writerx.top
-    updatedAt: '2026-11-08T16:16:09.828Z'
+    updatedAt: '2026-11-12T08:03:56.681Z'
     models:
+      - modelId: ernie-5.5-flash-preview-free
+        hubMaxInputChars: 1000000
+        modelContextTokens: 1000000
+        modelMaxOutputTokens: 128000
       - modelId: writerx-free
+        hubMaxInputChars: 1000000
+        modelContextTokens: 1000000
+        modelMaxOutputTokens: 64000
+      - modelId: step-5-preview-free
         hubMaxInputChars: 1000000
         modelContextTokens: 1000000
         modelMaxOutputTokens: 64000
@@ -484,9 +555,17 @@
         hubMaxInputChars: 1000000
         modelContextTokens: 1000000
         modelMaxOutputTokens: 128000
+      - modelId: doubao-seed-2.1-pro
+        hubMaxInputChars: 1000000
+        modelContextTokens: 1000000
+        modelMaxOutputTokens: 256000
       - modelId: doubao-seed-2.1-turbo
         hubMaxInputChars: 256000
         modelContextTokens: 200000
+        modelMaxOutputTokens: 256000
+      - modelId: doubao-seed-2.1-lite
+        hubMaxInputChars: 1000000
+        modelContextTokens: 1000000
         modelMaxOutputTokens: 256000
       - modelId: mimo-v2.6-flash
         hubMaxInputChars: 1000000
@@ -511,6 +590,10 @@
         hubMaxInputChars: 1000000
         modelContextTokens: 1000000
         modelMaxOutputTokens: 65000
+      - modelId: gemini-4-carbon
+        hubMaxInputChars: 1000000
+        modelContextTokens: 1000000
+        modelMaxOutputTokens: 128000
       - modelId: claude-haiku-5.5
         hubMaxInputChars: 1000000
         modelContextTokens: 1000000
@@ -530,23 +613,23 @@
 - id: agent-default-model
   config:
     provider: dsh
-    model: command/deepseek/deepseek-v4.1-flash
+    model: raccoon/sn-deepseek-v4-1-flash-1017
 - id: ui-book-library
   name: '@writerx/dsh-client-ui-book-library'
   config:
-    directory: F:\<USER>\Documents\WriterX\作品
+    directory: F:\Users\Administrator\Documents\WriterX\作品
 - insert:
     - id: armor-llm
       name: '@local/dsh-armor-llm'
       config:
-        file: '<WX_HOME>\AppData\Roaming\WriterX
-          Hermes\dsh-home\profiles\hermes\plugins\armor-llm\armor.md'
+        file: F:\Users\Administrator\AppData\Roaming\WriterX
+          Hermes\dsh-home\profiles\hermes\plugins\armor-llm\armor.md
     - id: inkos-bridge
       name: '@local/dsh-inkos-bridge'
       config:
-        inkosRoot: <INKOS>
-        nodePath: <NODE_EXE>
-        cliPath: <NODE_PKGS>\node_modules\@actalk\inkos\dist\index.js
+        inkosRoot: J:\SimonApp\AI-Workspace\InkOS-Test
+        nodePath: C:\Program Files\nodejs\node.exe
+        cliPath: E:\NodePackages\node_modules\@actalk\inkos\dist\index.js
         timeoutMs: 600000
         maxOutputChars: 20480
     - id: inkos-panel
@@ -554,23 +637,34 @@
 - id: purge-host
   name: dsh-purge
 - id: ui-chat
-  name: "@deepseek-ai/dsh-client-ui-chat"
+  name: '@deepseek-ai/dsh-client-ui-chat'
   config:
     transcriptView: detailed
     performanceUsage: compact
-
-
-# ── 场景推演 9136 / 阶段一（隔离副本 9137）────────────────────────────
-# @local/dsh-scene9136：status / plan / check / apply 四工具。
-# 路径一律来自配置，插件内无绝对路径默认值；inkosRoot / libraryRoot 缺失会报 E_CONFIG_MISSING。
 - insert:
     - id: scene9136
       name: '@local/dsh-scene9136'
       config:
-        baseUrl: 'http://127.0.0.1:9137'
+        baseUrl: http://127.0.0.1:9137
         timeoutMs: 5000
-        inkosRoot: '<WS>\_WriterX升级-阶段0.5-20261109\_iso\scene9136\_isobooks'
-        libraryRoot: 'F:\<USER>\Documents\WriterX\作品'
-        stateFile: '<WX_HOME>\dsh-home\scene9136\state.json'
+        inkosRoot: G:\Users\Administrator\Documents\deepseek-harness\default-workspace\_WriterX升级-阶段0.5-20261109\_iso\scene9136\_isobooks
+        libraryRoot: F:\Users\Administrator\Documents\WriterX\作品
+        stateFile: F:\Users\Administrator\AppData\Roaming\WriterX
+          Hermes\dsh-home\scene9136\state.json
         keepBackup: 10
+- id: web
+  name: '@deepseek-ai/dsh-web'
+  config:
+    searchProvider: local-modsearch
+    fetchProvider: local-modsearch-fetch
+- insert:
+    - id: web-search-local-modsearch
+      name: '@local/dsh-local-web'
+      config:
+        nodePath: C:\Program Files\nodejs\node.exe
+        scriptPath: I:\DSHHome\profiles\desktop\node_modules\@liustack\modsearch\dist\main.js
+        timeoutMs: 60000
+        maxBuffer: 8388608
+        maxResults: 8
+        registerWebFetch: true
 

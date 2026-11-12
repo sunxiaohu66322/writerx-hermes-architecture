@@ -8,6 +8,35 @@
 > 注：`raw.githubusercontent.com` 有 CDN 缓存，刚推完的几分钟内可能读到上一版；
 > 想确认最新版，请看仓库根本文件的**网页渲染**或 `/tags` 页（实时），或 `git show <tag>`。
 
+## v2 · 2026-11-13 00:14:10 +08:00 · v2 刷新：D层 cordis.patch.yml 670行/63id 脱敏重建、@local 插件3→6 补10个关键源码、新增V2更新说明与运行态目录登记；A/B 签名件未改；密钥/排除/串台终检0命中
+
+- 标签：`v2` ｜ 基线 commit（上一版）：`938d47742` ｜ 密钥终检：**0 命中** ｜ 纳入 **58** 文件 / 排除 **0**
+- 本版有意义的改动 **23** 项（A 新增 / M 修改 / D 删除 / R 改名）：
+  - `M` `00_读我_AI-FIRST.md`
+  - `M` `01_架构.md`
+  - `M` `02_现状与边界.md`
+  - `M` `03_怎么改.md`
+  - `M` `05_文件清单.md`
+  - `M` `06_核心文件导航.md`
+  - `M` `README.md`
+  - `M` `WriterX-Hermes-自包含包.md`
+  - `M` `_MANIFEST.json`
+  - `A` `docs/V2-更新说明-20261113.md`
+  - `M` `llms.txt`
+  - `A` `src/D_插件/armor-llm.armor-core.mjs`
+  - `A` `src/D_插件/armor-llm.armor.md`
+  - `A` `src/D_插件/armor-llm.lib.index.js`
+  - `A` `src/D_插件/armor-llm.package.json`
+  - `A` `src/D_插件/armor-llm.proxy.mjs`
+  - `A` `src/D_插件/dsh-local-web.index.js`
+  - `A` `src/D_插件/dsh-local-web.package.json`
+  - `A` `src/D_插件/dsh-style-assets.README.md`
+  - `A` `src/D_插件/dsh-style-assets.index.js`
+  - `A` `src/D_插件/dsh-style-assets.package.json`
+  - `M` `src/D_用户Profile/cordis.patch-脱敏.yml`
+  - `M` `给外部AI的开场话术.txt`
+- 本版提交 SHA：`git rev-parse v2`；改动记录同步维护在 `VERSIONS.md` 与仓库 tags 页。
+
 ## v1 · 2026-11-11 16:43:05 +08:00 · 初始版：WriterX Hermes 改编版架构快照 47 文件 + 仓库根六件套 + 自包含单文件包 + 开场话术 + 版本记录，供外部 AI 看全貌并指导升级
 
 - 标签：`v1` ｜ 基线 commit（上一版）：`bf69ea4e9` ｜ 密钥终检：**0 命中** ｜ 纳入 **47** 文件 / 排除 **0**
@@ -18,6 +47,4 @@
   - `A` `llms.txt`
   - `A` `给外部AI的开场话术.txt`
 - 本版提交 SHA：`git rev-parse v1`；改动记录同步维护在 `VERSIONS.md` 与仓库 tags 页。
-
-
 

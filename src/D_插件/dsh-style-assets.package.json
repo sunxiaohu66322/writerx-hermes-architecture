@@ -1,0 +1,21 @@
+{
+  "name": "@local/dsh-style-assets",
+  "description": "文风资产库存储底座：三层目录（原始拆书 analyses / 归一化候选 candidates / 正式文风 styles）+ 标准 JSON Schema + inbox 导入校验查重 + registry 索引 + 原子写与版本防覆盖 + 整库导出与基础恢复。阶段一不含 AI 拆书、文风融合界面与写作注入。",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "schema",
+    "test"
+  ],
+  "license": "UNLICENSED",
+  "peerDependencies": {
+    "@deepseek-ai/dsh-home-paths": "^0.2.0-rc.2"
+  }
+}
