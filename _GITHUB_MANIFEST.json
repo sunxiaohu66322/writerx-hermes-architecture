@@ -1,16 +1,16 @@
 {
   "tool": "github-project-push",
-  "generated_at": "2026-11-13T00:14:09.7788577+08:00",
+  "generated_at": "2026-11-13T22:57:29.3959490+08:00",
   "owner": "sunxiaohu66322",
   "repo": "writerx-hermes-architecture",
   "visibility": "public",
-  "staging_path": "D:\\DSH_Cache\\cache\\tmp\\ghpush-asm-writerx-hermes-architecture-20261113-001405",
-  "included_files": 58,
-  "included_bytes": 721133,
+  "staging_path": "D:\\DSH_Cache\\cache\\tmp\\ghpush-asm-writerx-hermes-architecture-20261113-225724",
+  "included_files": 63,
+  "included_bytes": 839709,
   "skipped_files": 0,
   "skipped_reasons": {},
   "secret_hits": 0,
-  "scanned_text_files": 60,
+  "scanned_text_files": 65,
   "dry_run": true,
   "sources": [
     {
